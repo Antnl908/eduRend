@@ -1,6 +1,7 @@
 
 #include "Scene.h"
 #include "QuadModel.h"
+#include "cubemodel.h"
 #include "OBJModel.h"
 
 Scene::Scene(
@@ -50,6 +51,7 @@ void OurTestScene::Init()
 	// Create objects
 	m_quad = new QuadModel(m_dxdevice, m_dxdevice_context);
 	m_sponza = new OBJModel("assets/crytek-sponza/sponza.obj", m_dxdevice, m_dxdevice_context);
+	m_cube = new CubeModel(m_dxdevice, m_dxdevice_context);
 }
 
 //
@@ -70,6 +72,14 @@ void OurTestScene::Update(
 	if (input_handler.IsKeyPressed(Keys::Left) || input_handler.IsKeyPressed(Keys::A))
 		m_camera->Move({ -m_camera_velocity * dt, 0.0f, 0.0f });
 
+	float mousedx = input_handler.GetMouseDeltaX();
+	float mousedy = input_handler.GetMouseDeltaY();
+
+	m_camera->Look(mousedx, mousedy);
+
+	/*yaw += mousedx * sense;
+	pitch += mousedy * sense;*/
+
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
 	// but the T*R*S order is most common; i.e. scale, then rotate, and then translate.
@@ -85,6 +95,10 @@ void OurTestScene::Update(
 	m_sponza_transform = mat4f::translation(0, -5, 0) *		 // Move down 5 units
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
 		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+
+	m_cube_transform = mat4f::translation(0, -1.5, 1) *			// No translation
+		mat4f::rotation(0.0f, 0.0f, 0.0f, 0.0f) *	// Rotate continuously around the y-axis
+		mat4f::scaling(1.0, 1.0, 1.0);				// Scale uniformly to 150%
 
 	// Increment the rotation angle.
 	m_angle += m_angular_velocity * dt;
@@ -118,11 +132,15 @@ void OurTestScene::Render()
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(m_sponza_transform, m_view_matrix, m_projection_matrix);
 	m_sponza->Render();
+
+	UpdateTransformationBuffer(m_cube_transform, m_view_matrix, m_projection_matrix);
+	m_cube->Render();
 }
 
 void OurTestScene::Release()
 {
 	SAFE_DELETE(m_quad);
+	SAFE_DELETE(m_cube);
 	SAFE_DELETE(m_sponza);
 	SAFE_DELETE(m_camera);
 
