@@ -32,14 +32,14 @@ float4 PS_main(PSIn input) : SV_Target
 	
 	return float4(input.Normal*0.5+0.5, 1);
 	
-	//ambient + summa av diffuse + specular
-    float4 dir = normalize(lightPos - input.Pos);
-	//skalär av normalen och dir
-    float dif = dor(input.Normal, dir);
+	////ambient + summa av diffuse + specular
+ //   float4 dir = normalize(lightPos - input.Pos);
+	////skalär av normalen och dir
+ //   float dif = dor(input.Normal, dir);
 
-    ambient + (diffuse * dif) + (specular * )
+ //   ambient + (diffuse * dif) + (specular * )
 
-    return float4(input.Normal * 0.5 + 0.5, 1);
+ //   return float4(input.Normal * 0.5 + 0.5, 1);
 	
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 //	return float4(input.TexCoord, 0, 1);
