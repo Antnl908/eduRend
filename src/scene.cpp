@@ -130,9 +130,13 @@ void OurTestScene::Render()
 	m_projection_matrix = m_camera->ProjectionMatrix();
 
 	linalg::vec4f campos = m_camera->Pos();
+	linalg::vec4f lightpos = { 1, 5, 1, 1 };
 	linalg::vec4f vecallone {1, 1, 1, 1};
-	UpdateCameraAndLightBuffer(campos, campos);
-	UpdateMaterialBuffer(vecallone, vecallone, vecallone);
+	linalg::vec4f vecalzero {0, 0, 0, 0};
+	linalg::vec4f vectest {1, 1, 1, 0};
+	UpdateCameraAndLightBuffer(campos, lightpos);
+	//UpdateMaterialBuffer(vecallone, vecallone, vecallone);
+	UpdateMaterialBuffer(vecalzero, vecallone, vecallone);
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(m_quad_transform, m_view_matrix, m_projection_matrix);
@@ -232,6 +236,7 @@ void OurTestScene::UpdateCameraAndLightBuffer(
 	m_dxdevice_context->Map(m_cameraandlight_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	CameraAndLightBuffer* cameraandlightbuffer = (CameraAndLightBuffer*)resource.pData;
 	cameraandlightbuffer->cameraPos = camera_position;
+	//cameraandlightbuffer->lightPos = light_position;
 	cameraandlightbuffer->lightPos = light_position;
 	m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
 }
