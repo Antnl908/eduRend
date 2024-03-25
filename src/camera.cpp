@@ -113,5 +113,5 @@ mat4f Camera::ProjectionMatrix() const noexcept
 
 linalg::vec4f Camera::Pos()
 {
-	return linalg::vec4f{m_position.x, m_position.y, m_position.x, 1};
+	return linalg::vec4f{m_position.x, m_position.y, m_position.z, 1};
 };

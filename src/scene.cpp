@@ -131,12 +131,13 @@ void OurTestScene::Render()
 
 	linalg::vec4f campos = m_camera->Pos();
 	linalg::vec4f lightpos = { 1, 5, 1, 1 };
-	linalg::vec4f vecallone {1, 1, 1, 1};
-	linalg::vec4f vecalzero {0, 0, 0, 0};
-	linalg::vec4f vectest {1, 1, 1, 0};
+	linalg::vec4f vecallone = {1, 1, 1, 1};
+	linalg::vec4f vecalzero = {0, 0, 0, 0};
+	linalg::vec4f vectest = {0.5f, 0.0f, 0.0f, 0.0f};
+	linalg::vec4f vectest2 = {0.0f, 0.5f, 0.0f, 0.0f};
 	UpdateCameraAndLightBuffer(campos, lightpos);
 	//UpdateMaterialBuffer(vecallone, vecallone, vecallone);
-	UpdateMaterialBuffer(vecalzero, vecallone, vecallone);
+	UpdateMaterialBuffer(vectest, vecallone, vecallone);
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(m_quad_transform, m_view_matrix, m_projection_matrix);
@@ -146,6 +147,7 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(m_sponza_transform, m_view_matrix, m_projection_matrix);
 	m_sponza->Render();
 
+	UpdateMaterialBuffer(vectest2, vecallone, vecallone);
 	UpdateTransformationBuffer(m_cube_transform, m_view_matrix, m_projection_matrix);
 	m_cube->Render();
 }

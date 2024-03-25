@@ -56,7 +56,7 @@ float4 PS_main(PSIn input) : SV_Target
 	//float4 V = normalize(cameraPos - input.PosWorld);
 	float3 V = normalize(cameraPos.xyz - input.PosWorld);
 
-	float  RV = pow(max( 0.0f, dot(R, V)), 5.0f);
+	float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), 64.0f);
 
 	float4 i = ambient + ((diffuse * LN) + (specular * RV));
 
