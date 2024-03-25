@@ -10,6 +10,7 @@ public:
 	CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
 
 	virtual void Render() const;
+	//virtual void Render(ID3D11Buffer* material) const;
 
 	~CubeModel() { }
 };

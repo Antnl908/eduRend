@@ -31,6 +31,8 @@ OurTestScene::OurTestScene(
 	Scene(dxdevice, dxdevice_context, window_width, window_height)
 { 
 	InitTransformationBuffer();
+	InitCameraAndLightBuffer();
+	InitMaterialBuffer();
 	// + init other CBuffers
 }
 
@@ -120,10 +122,17 @@ void OurTestScene::Render()
 {
 	// Bind transformation_buffer to slot b0 of the VS
 	m_dxdevice_context->VSSetConstantBuffers(0, 1, &m_transformation_buffer);
+	m_dxdevice_context->PSSetConstantBuffers(0, 1, &m_cameraandlight_buffer);
+	m_dxdevice_context->PSSetConstantBuffers(1, 1, &m_material_buffer);
 
 	// Obtain the matrices needed for rendering from the camera
 	m_view_matrix = m_camera->WorldToViewMatrix();
 	m_projection_matrix = m_camera->ProjectionMatrix();
+
+	linalg::vec4f campos = m_camera->Pos();
+	linalg::vec4f vecallone {1, 1, 1, 1};
+	UpdateCameraAndLightBuffer(campos, campos);
+	UpdateMaterialBuffer(vecallone, vecallone, vecallone);
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(m_quad_transform, m_view_matrix, m_projection_matrix);
@@ -145,6 +154,8 @@ void OurTestScene::Release()
 	SAFE_DELETE(m_camera);
 
 	SAFE_RELEASE(m_transformation_buffer);
+	SAFE_RELEASE(m_cameraandlight_buffer);
+	SAFE_RELEASE(m_material_buffer);
 	// + release other CBuffers
 }
 
@@ -171,6 +182,32 @@ void OurTestScene::InitTransformationBuffer()
 	ASSERT(hr = m_dxdevice->CreateBuffer(&matrixBufferDesc, nullptr, &m_transformation_buffer));
 }
 
+void OurTestScene::InitCameraAndLightBuffer()
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC matrixBufferDesc = { 0 };
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.ByteWidth = sizeof(CameraAndLightBuffer);
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+	ASSERT(hr = m_dxdevice->CreateBuffer(&matrixBufferDesc, nullptr, &m_cameraandlight_buffer));
+}
+
+void OurTestScene::InitMaterialBuffer()
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC matrixBufferDesc = { 0 };
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.ByteWidth = sizeof(MaterialBuffer);
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+	ASSERT(hr = m_dxdevice->CreateBuffer(&matrixBufferDesc, nullptr, &m_material_buffer));
+}
+
 void OurTestScene::UpdateTransformationBuffer(
 	mat4f ModelToWorldMatrix,
 	mat4f WorldToViewMatrix,
@@ -185,3 +222,32 @@ void OurTestScene::UpdateTransformationBuffer(
 	matrixBuffer->ProjectionMatrix = ProjectionMatrix;
 	m_dxdevice_context->Unmap(m_transformation_buffer, 0);
 }
+
+void OurTestScene::UpdateCameraAndLightBuffer(
+	vec4f camera_position,
+	vec4f light_position)
+{
+	// Map the resource buffer, obtain a pointer and then write our matrices to it
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_dxdevice_context->Map(m_cameraandlight_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	CameraAndLightBuffer* cameraandlightbuffer = (CameraAndLightBuffer*)resource.pData;
+	cameraandlightbuffer->cameraPos = camera_position;
+	cameraandlightbuffer->lightPos = light_position;
+	m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
+}
+
+void OurTestScene::UpdateMaterialBuffer(
+	vec4f ambient_, 
+	vec4f diffuse_, 
+	vec4f specular_)
+{
+	// Map the resource buffer, obtain a pointer and then write our matrices to it
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_dxdevice_context->Map(m_material_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	MaterialBuffer* materialbuffer = (MaterialBuffer*)resource.pData;
+	materialbuffer->ambient = ambient_;
+	materialbuffer->diffuse = diffuse_;
+	materialbuffer->specular = specular_;
+	m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
+}
+

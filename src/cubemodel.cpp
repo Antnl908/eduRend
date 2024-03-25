@@ -251,3 +251,20 @@ void CubeModel::Render() const
 	// Make the drawcall
 	m_dxdevice_context->DrawIndexed(m_number_of_indices, 0, 0);
 }
+
+void CubeModel::Render(ID3D11Buffer* material) const
+{
+	// Bind our vertex buffer
+	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
+	const UINT32 offset = 0;
+	m_dxdevice_context->IASetVertexBuffers(0, 1, &m_vertex_buffer, &stride, &offset);
+	
+	//m_dxdevice_context->PSSetConstantBuffers(0, 1, &m_vertex_buffer, &stride, &offset);
+	
+
+	// Bind our index buffer
+	m_dxdevice_context->IASetIndexBuffer(m_index_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+	// Make the drawcall
+	m_dxdevice_context->DrawIndexed(m_number_of_indices, 0, 0);
+}

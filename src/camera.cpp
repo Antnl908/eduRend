@@ -9,13 +9,13 @@ void Camera::MoveTo(const vec3f& position) noexcept
 
 void Camera::Move(const vec3f& direction) noexcept
 {
-	float angle = (yaw / 180.0f * 3.14159f);
+	/*float angle = (yaw / 180.0f * 3.14159f);
 	float co = cos(angle);
 	float si = sin(angle);
 
 	float angle2 = ((yaw - 90) / 180.0f * 3.14159f);
 	float co2 = cos(angle2);
-	float si2 = sin(angle2);
+	float si2 = sin(angle2);*/
 
 	/*player->rb->fx += (si * ((analog_input->y * 0.016f) * -1)) * movement_speed * 100;
 	player->rb->fz += (co * ((analog_input->y * 0.016f) * 1)) * movement_speed * 100;
@@ -29,17 +29,38 @@ void Camera::Move(const vec3f& direction) noexcept
 	m_position.x += (si2 * direction.x);
 	m_position.z += (co2 * direction.x);*/
 
+
+
+
+	/*mat4f r = mat4f::rotation(0, yaw / 180.0f * 3.14159f, pitch / 180.0f * 3.14159f);
+
+	mat4f t = mat4f::translation(-m_position);
+
+	r.transpose();
+
+	mat4f transform = r * t;*/
+
+
+
+
+
 	mat4f r = mat4f::rotation(0, yaw / 180.0f * 3.14159f, pitch / 180.0f * 3.14159f);
 	mat4f t = mat4f::translation(m_position);
 
 	mat4f transform = t * r;
 
 	//linalg::vec3f dir = transform * direction;
-	linalg::vec4f forward = (0, 0, -1, 0);
-	linalg::vec4f forwardWorld = transform * forward;
-	linalg::vec3f f = (forwardWorld.x, forwardWorld.y, forwardWorld.z);
+	linalg::vec4f dir = { direction.xyz0() };
+	linalg::vec4f forwardWorld = transform * dir;
+	linalg::vec3f f = { forwardWorld.x, forwardWorld.y, forwardWorld.z };
+
 
 	m_position += f;
+
+	//m_position += f;
+	/*m_position.x += forwardWorld.x;
+	m_position.y += forwardWorld.y;
+	m_position.z += forwardWorld.z;*/
 }
 
 //void Camera::Look(const vec3f& rotation) noexcept
@@ -89,3 +110,8 @@ mat4f Camera::ProjectionMatrix() const noexcept
 {
 	return mat4f::projection(m_vertical_fov, m_aspect_ratio, m_near_plane, m_far_plane);
 }
+
+linalg::vec4f Camera::Pos()
+{
+	return linalg::vec4f{m_position.x, m_position.y, m_position.x, 1};
+};
