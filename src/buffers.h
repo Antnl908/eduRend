@@ -37,5 +37,5 @@ struct MaterialBuffer
 	std::string normalTexturePath;
 
 	//texture
-	alignas(16) Texture DiffuseTexture;
+	alignas(16) Texture diffuseTexture;
 };

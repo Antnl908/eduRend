@@ -1,5 +1,6 @@
 
 Texture2D texDiffuse : register(t0);
+SamplerState texSampler : register(s0);
 
 struct PSIn
 {
@@ -47,6 +48,11 @@ float4 PS_main(PSIn input) : SV_Target
 	
 	//ambient + summa av diffuse + specular
     //float4 L = normalize(lightPos - input.PosWorld);
+
+
+
+
+	//Phong
     float3 L = normalize(lightPos.xyz - input.PosWorld);
 	//skalär av normalen och dir
     float LN = max(0.0f, dot(input.Normal, L));
@@ -59,9 +65,14 @@ float4 PS_main(PSIn input) : SV_Target
 	//float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), 64.0f);
 	float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), specular.w);
 
-	float4 i = ambient + ((diffuse * LN) + (specular * RV));
+	//float4 i = ambient + ((diffuse * LN) + (specular * RV));
+	float4 i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LN) + (specular * RV));
 
 	return i;
+
+
+
+	//return texDiffuse.Sample(texSampler, input.TexCoord);
 
     //return float4(input.Normal * 0.5 + 0.5, 1);
 	

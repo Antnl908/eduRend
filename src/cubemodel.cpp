@@ -207,7 +207,7 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 #pragma endregion
 
 #pragma region Material
-	material.ambient = { 0.0f, 0.5f, 0.0f, 0.0f };
+	material.ambient = { 0.0f, 0.0f, 0.0f, 0.0f };
 	material.diffuse = { 1, 1, 1, 1 };
 	material.specular = { 1, 1, 1, 1 };
 #pragma endregion
@@ -258,6 +258,22 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	if (m_local_material_buffer != nullptr) { test = true; }
 
 	int testSize = sizeof(MaterialBuffer);
+
+
+	//Diffuse texture
+	//HRESULT hr;
+	if (material.diffuseTexturePath.size()) {
+
+		hr = LoadTextureFromFile(
+			dxdevice,
+			material.diffuseTexturePath.c_str(),
+			&material.diffuseTexture);
+		std::cout << "\t" << material.diffuseTexturePath
+			<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+	}
+	else {
+		std::cout << "\t" << "material: " << material.name << " does not contain a diffuse texture path." << std::endl;
+	}
 	
 };
 
@@ -276,6 +292,9 @@ void CubeModel::Render() const
 	
 	// Bind material
 	m_dxdevice_context->PSSetConstantBuffers(1, 1, &m_local_material_buffer);
+
+	//Bind texture
+	m_dxdevice_context->PSSetShaderResources(0, 1, &material.diffuseTexture.TextureView);
 
 	
 
