@@ -63,7 +63,8 @@ float4 PS_main(PSIn input) : SV_Target
 	float3 V = normalize(cameraPos.xyz - input.PosWorld);
 
 	//float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), 64.0f);
-	float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), specular.w);
+	//float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), specular.w);
+	float  RV = pow(max( 0.0f, dot(R, V)), specular.w);
 
 	//float4 i = ambient + ((diffuse * LN) + (specular * RV));
 	float4 i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LN) + (specular * RV));

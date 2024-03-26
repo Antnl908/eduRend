@@ -34,6 +34,8 @@ protected:
 	ID3D11Buffer* m_index_buffer = nullptr; //!< Pointer to gpu side index buffer
 	ID3D11Buffer* m_local_material_buffer = nullptr;
 	MaterialBuffer material;
+	ID3D11SamplerState* samplerState;
+	D3D11_SAMPLER_DESC sd;
 
 public:
 
@@ -42,8 +44,29 @@ public:
 	 * @param dxdevice ID3D11Device to be used in the model.
 	 * @param dxdevice_context ID3D11DeviceContext to be used in the model.
 	*/
-	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) 
+	/*Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) 
 		:	m_dxdevice(dxdevice), m_dxdevice_context(dxdevice_context) { }
+	*/
+	
+	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) 
+		:	m_dxdevice(dxdevice), m_dxdevice_context(dxdevice_context) 
+	{ 
+		HRESULT hr;
+		sd =
+		{
+			D3D11_FILTER_ANISOTROPIC,
+			D3D11_TEXTURE_ADDRESS_WRAP,
+			D3D11_TEXTURE_ADDRESS_WRAP,
+			D3D11_TEXTURE_ADDRESS_WRAP,
+			0.0f,
+			4,
+			D3D11_COMPARISON_NEVER,
+			{ 1.0f, 1.0f, 1.0f },
+			-FLT_MAX,
+			FLT_MAX,
+		};
+		ASSERT(hr = m_dxdevice->CreateSamplerState(&sd, &samplerState));
+	}
 
 	/**
 	 * @brief Abstract render method: must be implemented by derived classes
@@ -61,6 +84,7 @@ public:
 		SAFE_RELEASE(m_vertex_buffer);
 		SAFE_RELEASE(m_index_buffer);
 		SAFE_RELEASE(m_local_material_buffer);
+		SAFE_RELEASE(samplerState);
 	}
 };
 
