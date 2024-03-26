@@ -111,6 +111,11 @@ void OBJModel::Render() const
 	}
 }
 
+void OBJModel::UpdateMaterial() const
+{
+
+}
+
 OBJModel::~OBJModel()
 {
 	for (auto& material : m_materials)

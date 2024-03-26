@@ -18,18 +18,18 @@
  * @brief Abstract class defining scene rendering and updating.
 */
 
-struct CameraAndLightBuffer
-{
-	linalg::vec4f cameraPos;
-	linalg::vec4f lightPos;
-};
-
-struct MaterialBuffer
-{
-	linalg::vec4f ambient;
-	linalg::vec4f diffuse;
-	linalg::vec4f specular;
-};
+//struct CameraAndLightBuffer
+//{
+//	linalg::vec4f cameraPos;
+//	linalg::vec4f lightPos;
+//};
+//
+//struct MaterialBuffer
+//{
+//	linalg::vec4f ambient;
+//	linalg::vec4f diffuse;
+//	linalg::vec4f specular;
+//};
 
 class Scene
 {
@@ -94,6 +94,7 @@ class OurTestScene : public Scene
 	ID3D11Buffer* m_transformation_buffer = nullptr;
 	ID3D11Buffer* m_cameraandlight_buffer = nullptr;
 	ID3D11Buffer* m_material_buffer = nullptr;
+	ID3D11Buffer* m_material_buffer_two = nullptr;
 	// + other CBuffers
 
 	//
@@ -125,6 +126,8 @@ class OurTestScene : public Scene
 	void InitCameraAndLightBuffer();
 	
 	void InitMaterialBuffer();
+	
+	//void InitMaterialBuffer(ID3D11Buffer* mat);
 
 	void UpdateTransformationBuffer(mat4f model_to_world_matrix, mat4f world_to_view_matrix, mat4f projection_matrix);
 

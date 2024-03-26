@@ -84,3 +84,8 @@ void QuadModel::Render() const
 	// Make the drawcall
 	m_dxdevice_context->DrawIndexed(m_number_of_indices, 0, 0);
 }
+
+void QuadModel::UpdateMaterial() const
+{
+
+}

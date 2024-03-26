@@ -27,6 +27,8 @@ public:
 	*/
 	virtual void Render() const;
 
+	virtual void UpdateMaterial()  const;
+
 	/**
 	 *@brief Destructor. 
 	*/

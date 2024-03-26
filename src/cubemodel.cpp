@@ -1,4 +1,5 @@
 #include "cubemodel.h"
+//#include "buffers.h"
 
 CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
@@ -205,6 +206,13 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	indices.push_back(23);
 #pragma endregion
 
+#pragma region Material
+	material.ambient = { 0.0f, 0.5f, 0.0f, 0.0f };
+	material.diffuse = { 1, 1, 1, 1 };
+	material.specular = { 1, 1, 1, 1 };
+#pragma endregion
+
+
 	
 	D3D11_BUFFER_DESC vertexbufferDesc{ 0 };
 	vertexbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -235,11 +243,29 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 
 	m_number_of_indices = (unsigned int)indices.size();
 
+
+	HRESULT hr;
+	D3D11_BUFFER_DESC matrixBufferDesc = { 0 };
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.ByteWidth = sizeof(MaterialBuffer);
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+	ASSERT(hr = m_dxdevice->CreateBuffer(&matrixBufferDesc, nullptr, &m_local_material_buffer));
+
+	bool test = false;
+	if (m_local_material_buffer != nullptr) { test = true; }
+
+	int testSize = sizeof(MaterialBuffer);
 	
 };
 
 void CubeModel::Render() const
 {
+	// Update material
+	UpdateMaterial();
+
 	// Bind our vertex buffer
 	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
 	const UINT32 offset = 0;
@@ -247,9 +273,27 @@ void CubeModel::Render() const
 
 	// Bind our index buffer
 	m_dxdevice_context->IASetIndexBuffer(m_index_buffer, DXGI_FORMAT_R32_UINT, 0);
+	
+	// Bind material
+	m_dxdevice_context->PSSetConstantBuffers(1, 1, &m_local_material_buffer);
+
+	
 
 	// Make the drawcall
 	m_dxdevice_context->DrawIndexed(m_number_of_indices, 0, 0);
+}
+
+void CubeModel::UpdateMaterial() const
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_dxdevice_context->Map(m_local_material_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	MaterialBuffer* materialbuffer = (MaterialBuffer*)resource.pData;
+	//materialbuffer->ambient = material.ambient;
+	materialbuffer->ambient = { 0.0f, 0.5f, 0.0f, 0.0f };
+	materialbuffer->diffuse = { 1, 1, 1, 1 };
+	materialbuffer->specular = { 1, 1, 1, 64.0f };
+	//m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
+	m_dxdevice_context->Unmap(m_local_material_buffer, 0);
 }
 
 //void CubeModel::Render() const

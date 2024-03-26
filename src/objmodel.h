@@ -45,6 +45,7 @@ public:
 	 * @brief Renders the model.
 	*/
 	virtual void Render() const;
+	virtual void UpdateMaterial() const;
 
 	/**
 	 * @brief Destructor 
