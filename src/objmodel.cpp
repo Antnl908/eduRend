@@ -88,6 +88,8 @@ OBJModel::OBJModel(
 
 void OBJModel::Render() const
 {
+	Model::Render();
+
 	// Bind vertex buffer
 	const UINT32 stride = sizeof(Vertex);
 	const UINT32 offset = 0;
@@ -106,7 +108,7 @@ void OBJModel::Render() const
 		m_dxdevice_context->PSSetShaderResources(0, 1, &material.DiffuseTexture.TextureView);
 		// + bind other textures here, e.g. a normal map, to appropriate slots
 
-		m_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
+		//m_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
 
 		// Make the drawcall
 		m_dxdevice_context->DrawIndexed(indexRange.Size, indexRange.Start, 0);

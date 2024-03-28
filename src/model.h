@@ -48,9 +48,9 @@ public:
 		:	m_dxdevice(dxdevice), m_dxdevice_context(dxdevice_context) { }
 	*/
 	
-	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) 
-		:	m_dxdevice(dxdevice), m_dxdevice_context(dxdevice_context) 
-	{ 
+	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
+		/*:	m_dxdevice(dxdevice), m_dxdevice_context(dxdevice_context) */
+	/*{ 
 		HRESULT hr;
 		sd =
 		{
@@ -66,12 +66,16 @@ public:
 			FLT_MAX,
 		};
 		ASSERT(hr = m_dxdevice->CreateSamplerState(&sd, &samplerState));
-	}
+	}*/
 
 	/**
 	 * @brief Abstract render method: must be implemented by derived classes
 	*/
-	virtual void Render() const = 0;
+	//virtual void Render() const = 0;
+	virtual void Render() const;
+	/*{
+		m_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
+	};*/
 	
 	virtual void UpdateMaterial() const = 0;
 
