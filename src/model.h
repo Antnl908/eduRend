@@ -79,6 +79,8 @@ public:
 	
 	virtual void UpdateMaterial() const = 0;
 
+	virtual void ComputeTB(Vertex& v0, Vertex& v1, Vertex& v2) const;
+
 	/**
 	 * @brief Destructor.
 	 * @details Releases the vertex and index buffers of the Model.

@@ -38,4 +38,5 @@ struct MaterialBuffer
 
 	//texture
 	alignas(16) Texture diffuseTexture;
+	alignas(16) Texture normalTexture;
 };

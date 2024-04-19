@@ -274,6 +274,19 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	else {
 		std::cout << "\t" << "material: " << material.name << " does not contain a diffuse texture path." << std::endl;
 	}
+
+	if (material.normalTexturePath.size()) {
+
+		hr = LoadTextureFromFile(
+			dxdevice,
+			material.normalTexturePath.c_str(),
+			&material.normalTexture);
+		std::cout << "\t" << material.normalTexturePath
+			<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+	}
+	else {
+		std::cout << "\t" << "material: " << material.name << " does not contain a normal texture path." << std::endl;
+	}
 	
 };
 
