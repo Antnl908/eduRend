@@ -51,7 +51,8 @@ float4 PS_main(PSIn input) : SV_Target
 
 	//ambient + summa av diffuse + specular
 	//float4 L = normalize(lightPos - input.PosWorld);
-
+	
+	float3 NPrime = ((texNormal.Sample(texSampler, input.TexCoord).xyz) * 2 - 1);
 
 	float3 NN = normalize(input.Normal);
 	float3 TN = normalize(input.Tangent);
@@ -60,22 +61,22 @@ float4 PS_main(PSIn input) : SV_Target
 	//float3x3 TBN = { TN, BN, NN };
 	float3x3 TBN =  transpose(float3x3(TN, BN, NN));
 
-
-	float3 NPrime = ((texNormal.Sample(texSampler, input.TexCoord)) * 2 - 1).xyz;
 	float3 NBis = normalize(mul(TBN, NPrime));
 
 
 	//Phong
-    float3 L = normalize(lightPos.xyz - input.PosWorld);
+    //float3 L = normalize(lightPos.xyz - input.PosWorld);
+    float3 L = normalize(lightPos.xyz - input.Pos.xyz);
 	//skalär av normalen och dir
     //float LN = max(0.0f, dot(input.Normal, L));
     float LNBis = max(0.0f, dot(NBis, L));
     
-	//float3 R = reflect(-L, input.Normal);
+	float3 R = reflect(-L, input.Normal);
 	float3 RNBis = reflect(-L, NBis);
 
 	//float4 V = normalize(cameraPos - input.PosWorld);
 	float3 V = normalize(cameraPos.xyz - input.PosWorld);
+	//float3 V = normalize(cameraPos.xyz - input.Pos.xyz);
 
 	//float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), 64.0f);
 	//float  RV = pow(max( 0.0f, dot(R, V) - 0.03f), specular.w);
