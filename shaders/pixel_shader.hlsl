@@ -65,8 +65,8 @@ float4 PS_main(PSIn input) : SV_Target
 
 
 	//Phong
-    //float3 L = normalize(lightPos.xyz - input.PosWorld);
-    float3 L = normalize(lightPos.xyz - input.Pos.xyz);
+    float3 L = normalize(lightPos.xyz - input.PosWorld);
+    //float3 L = normalize(lightPos.xyz - input.Pos.xyz);
 	//skalär av normalen och dir
     //float LN = max(0.0f, dot(input.Normal, L));
     float LNBis = max(0.0f, dot(NBis, L));

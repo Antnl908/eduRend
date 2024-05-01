@@ -80,6 +80,16 @@ void OurTestScene::Update(
 
 	m_camera->Look(mousedx, mousedy);
 
+	if (!back)
+	{
+		light_z += 0.5f;
+		if (light_z > 100.0f) { back = TRUE; }
+	}
+	else
+	{
+		light_z -= 0.5f;
+		if (light_z < -100.0f) { back = FALSE; }
+	}
 	/*yaw += mousedx * sense;
 	pitch += mousedy * sense;*/
 
@@ -131,7 +141,7 @@ void OurTestScene::Render()
 	m_projection_matrix = m_camera->ProjectionMatrix();
 
 	linalg::vec4f campos = m_camera->Pos();
-	linalg::vec4f lightpos = { 1, 5, 1, 1 };
+	linalg::vec4f lightpos = { 0, 5, light_z, 1 };
 	//linalg::vec4f lightpos = { 0, 5, 0, 0 };
 	linalg::vec4f vecallone = {1, 1, 1, 1};
 	linalg::vec4f alphaone = {0, 0, 0, 1};
