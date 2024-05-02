@@ -44,12 +44,15 @@ struct Material
 	// File paths to textures
 	std::string DiffuseTextureFilename; //!< Diffuse texture path
 	std::string NormalTextureFilename; //!< Normal texture path
+	//std::string CubeTextureFilename; //!< Normal texture path
 
 	// + more texture types (extend OBJLoader::LoadMaterials if needed)
 
 	// Device textures
 	Texture DiffuseTexture; //!< Diffuse Texture
 	Texture NormalTexture; //!< Diffuse Texture
+	Texture CubeTexture; //!< Cube map Texture
+	bool hasNormal = FALSE;
 	// + other texture types
 };
 

@@ -39,4 +39,6 @@ struct MaterialBuffer
 	//texture
 	alignas(16) Texture diffuseTexture;
 	alignas(16) Texture normalTexture;
+	alignas(16) Texture cubeTexture;
+	alignas(16) bool hasNormal = FALSE;
 };

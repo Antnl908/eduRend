@@ -106,6 +106,8 @@ class OurTestScene : public Scene
 	Model* m_sponza;
 	Model* m_cube;
 
+	Texture cube_map;
+
 	mat4f m_sponza_transform;
 	mat4f m_quad_transform;
 	mat4f m_cube_transform;
@@ -124,7 +126,7 @@ class OurTestScene : public Scene
 	float light_z;
 	bool back;
 	
-	
+	void InitSkybox();
 
 	void InitTransformationBuffer();
 

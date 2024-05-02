@@ -89,6 +89,7 @@ OBJModel::OBJModel(
 				dxdevice,
 				material.NormalTextureFilename.c_str(),
 				&material.NormalTexture);
+			material.hasNormal = TRUE;
 			std::cout << "\t" << material.NormalTextureFilename
 				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}

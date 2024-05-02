@@ -57,6 +57,27 @@ void OurTestScene::Init()
 	m_cube = new CubeModel(m_dxdevice, m_dxdevice_context);
 }
 
+void OurTestScene::InitSkybox()
+{
+	const char* cube_filenames[6] =
+	{
+	   "assets/cubemaps/Skybox/Skybox-posx.png",
+	   "assets/cubemaps/Skybox/Skybox-negx.png",
+	   "assets/cubemaps/Skybox/Skybox-posy.png",
+	   "assets/cubemaps/Skybox/Skybox-negy.png",
+	   "assets/cubemaps/Skybox/Skybox-posz.png",
+	   "assets/cubemaps/Skybox/Skybox-negz.png",
+	};
+
+	HRESULT hr = LoadCubeTextureFromFile(m_dxdevice, cube_filenames, &cube_map);
+	std::cout << "\t" << "Loading cube_map: " << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+
+	m_dxdevice_context->PSSetShaderResources( 3, 1, &cube_map.TextureView);
+
+	SAFE_RELEASE(cube_map.TextureView);
+
+}
+
 //
 // Called every frame
 // dt (seconds) is time elapsed since the previous frame
