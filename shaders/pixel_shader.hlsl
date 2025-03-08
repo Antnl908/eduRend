@@ -1,7 +1,7 @@
 
 Texture2D texDiffuse : register(t0);
 Texture2D texNormal : register(t1);
-Texture3D cubeMap : register(t3);
+TextureCube cubeMap : register(t3);
 SamplerState texSampler : register(s0);
 
 struct PSIn
@@ -25,7 +25,8 @@ cbuffer MaterialBuffer : register(b1)
     float4 ambient;
     float4 diffuse;
     float4 specular;
-	//bool hasNormal;
+	bool hasNormal;
+	bool isSkybox;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -91,6 +92,11 @@ float4 PS_main(PSIn input) : SV_Target
 	//float4 i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LN) + (specular * RV));
 	////float4 i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LNBis) + (specular * RVBis));
 	////slut funkar
+	
+    //float3 eyeVetor = normalize(cameraPos.xyz - input.PosWorld.xyz);
+    float3 eyeVetor = normalize(input.PosWorld.xyz - cameraPos.xyz);
+	
+    float3 CubeReflect = reflect(eyeVetor, input.Normal);
 
 
 
@@ -98,14 +104,18 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 i;
 	float3 NPrime = ((texNormal.Sample(texSampler, input.TexCoord).xyz) * 2 - 1);
 	if (NPrime.x == -1)
+	//if (!hasNormal)
 	{
 		float3 L = normalize(lightPos.xyz - input.PosWorld);
 		float LN = max(0.0f, dot(input.Normal, L));
 		float3 R = reflect(-L, input.Normal);
 		float3 V = normalize(cameraPos.xyz - input.PosWorld);
 		float  RV = pow(max(0.0f, dot(R, V)), specular.w);
-		i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LN) + (specular * RV));
-	}
+		//i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LN) + (specular * RV));
+        //i = ambient + ((((texDiffuse.Sample(texSampler, input.TexCoord)) + (cubeMap.Sample(texSampler, CubeReflect))) * LN) + (specular * RV));
+        i = ambient + ((((texDiffuse.Sample(texSampler, input.TexCoord))) * LN) + ((cubeMap.Sample(texSampler, CubeReflect) * RV)));
+        //i = ambient + (((cubeMap.Sample(texSampler, CubeReflect)) * LN) + (specular * RV));
+    }
 	else
 	{
 		float3 NN = normalize(input.Normal);
@@ -118,8 +128,28 @@ float4 PS_main(PSIn input) : SV_Target
 		float3 RNBis = reflect(-L, NBis);
 		float3 V = normalize(cameraPos.xyz - input.PosWorld);
 		float  RVBis = pow(max(0.0f, dot(RNBis, V)), specular.w);
-		i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LNBis) + (specular * RVBis));
-	}
+		//i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LNBis) + (specular * RVBis));
+        i = ambient + (((texDiffuse.Sample(texSampler, input.TexCoord)) * LNBis) + (cubeMap.Sample(texSampler, CubeReflect) * RVBis)); //det som fungerade nästan korrekt, verkar mer rimligt med CubeReflect än -CubeReflect
+        //i = ambient + (((cubeMap.Sample(texSampler, CubeReflect)) * LNBis) + (specular * RVBis));
+		
+		
+        
+    }
+	
+    if (ambient.w == 1)
+    {
+        i = (cubeMap.Sample(texSampler, eyeVetor));
+    }
+	
+	//Behåll det ovan
+	
+	//dessa tester funkar
+    //i = (cubeMap.Sample(texSampler, CubeReflect)); //test
+	
+    //i = (cubeMap.Sample(texSampler, eyeVetor)); //Allt får skybox texture men ser korrekt ut
+	//testerna ovan
+	
+	
 
 	//float3 NN = normalize(input.Normal);
 	//float3 TN = normalize(input.Tangent);
@@ -157,12 +187,13 @@ float4 PS_main(PSIn input) : SV_Target
 
 
 	return i;
+    //return float4(input.Normal ,0);
 
 
 
 	//return texDiffuse.Sample(texSampler, input.TexCoord);
 
-    //return float4(input.Normal * 0.5 + 0.5, 1);
+    //return float4(input.Binormal * 0.5 + 0.5, 1);
 	
 	/* Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	return float4(input.TexCoord, 0, 1);*/

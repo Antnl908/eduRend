@@ -79,6 +79,9 @@
     <ClInclude Include="src\cubemodel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyboxModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\inputhandler.cpp">
@@ -121,6 +124,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyboxModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

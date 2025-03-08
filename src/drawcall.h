@@ -36,6 +36,7 @@ struct Vertex
 struct Material
 {
 	vec3f AmbientColour		= { 0.0f, 0.5f, 0.0f }; //!< Ambient colour component
+	//alignas(16) vec4f AmbientColour		= { 0.0f, 0.5f, 0.0f, 1.0f}; //!< Ambient colour component
 	vec3f DiffuseColour		= { 0.0f, 0.5f, 0.0f }; //!< Diffuse colour component
 	vec3f SpecularColour	= { 1.0f, 1.0f, 1.0f }; //!< Specular colour component
     
@@ -52,7 +53,9 @@ struct Material
 	Texture DiffuseTexture; //!< Diffuse Texture
 	Texture NormalTexture; //!< Diffuse Texture
 	Texture CubeTexture; //!< Cube map Texture
-	bool hasNormal = FALSE;
+	//bool hasNormal = FALSE;
+	alignas(16) bool hasNormal;
+	alignas(16) bool isSkybox;
 	// + other texture types
 };
 

@@ -1,7 +1,7 @@
-#include "cubemodel.h"
+#include "skyboxModel.h"
 //#include "buffers.h"
 
-CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
+SkyboxModel::SkyboxModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
@@ -30,10 +30,11 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v3.Position = { -0.5, 0.5f, 0.5f };
 	v3.Normal = { 0, 0, 1 };
 	v3.TexCoord = { 1, 0 };
-	vertices.push_back(v0);
-	vertices.push_back(v1);
-	vertices.push_back(v2);
+	
 	vertices.push_back(v3);
+	vertices.push_back(v2);
+	vertices.push_back(v1);
+	vertices.push_back(v0);
 
 	//Triangle A
 	indices.push_back(0);
@@ -62,10 +63,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v7.Position = { -0.5, 0.5f, -0.5f };
 	v7.Normal = { 0, 1, 0 };
 	v7.TexCoord = { 1, 0 };
-	vertices.push_back(v4);
-	vertices.push_back(v5);
-	vertices.push_back(v6);
 	vertices.push_back(v7);
+	vertices.push_back(v6);
+	vertices.push_back(v5);
+	vertices.push_back(v4);
 
 	//Triangle A
 	indices.push_back(4);
@@ -94,10 +95,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v11.Position = { 0.5, 0.5f, 0.5f };
 	v11.Normal = { 1, 0, 0 };
 	v11.TexCoord = { 1, 0 };
-	vertices.push_back(v8);
-	vertices.push_back(v9);
-	vertices.push_back(v10);
 	vertices.push_back(v11);
+	vertices.push_back(v10);
+	vertices.push_back(v9);
+	vertices.push_back(v8);
 
 	//Triangle A
 	indices.push_back(8);
@@ -126,10 +127,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v15.Position = { -0.5, 0.5f, -0.5f };
 	v15.Normal = { -1, 0, 0 };
 	v15.TexCoord = { 1, 0 };
-	vertices.push_back(v12);
-	vertices.push_back(v13);
-	vertices.push_back(v14);
 	vertices.push_back(v15);
+	vertices.push_back(v14);
+	vertices.push_back(v13);
+	vertices.push_back(v12);
 
 	//Triangle A
 	indices.push_back(12);
@@ -158,10 +159,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v19.Position = { 0.5, 0.5f, -0.5f };
 	v19.Normal = { 0, 0, -1 };
 	v19.TexCoord = { 1, 0 };
-	vertices.push_back(v16);
-	vertices.push_back(v17);
-	vertices.push_back(v18);
 	vertices.push_back(v19);
+	vertices.push_back(v18);
+	vertices.push_back(v17);
+	vertices.push_back(v16);
 
 	//Triangle A
 	indices.push_back(16);
@@ -190,10 +191,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	v23.Position = { 0.5, -0.5f, -0.5f };
 	v23.Normal = { 0, -1, 0 };
 	v23.TexCoord = { 1, 0 };
-	vertices.push_back(v20);
-	vertices.push_back(v21);
-	vertices.push_back(v22);
 	vertices.push_back(v23);
+	vertices.push_back(v22);
+	vertices.push_back(v21);
+	vertices.push_back(v20);
 
 	//Triangle A
 	indices.push_back(20);
@@ -213,7 +214,7 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 #pragma endregion
 
 
-	
+
 	D3D11_BUFFER_DESC vertexbufferDesc{ 0 };
 	vertexbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexbufferDesc.CPUAccessFlags = 0;
@@ -289,10 +290,10 @@ CubeModel::CubeModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 		material.hasNormal = FALSE;
 		std::cout << "\t" << "material: " << material.name << " does not contain a normal texture path." << std::endl;
 	}
-	
+
 };
 
-void CubeModel::Render() const
+void SkyboxModel::Render() const
 {
 	// Update material
 	UpdateMaterial();
@@ -304,33 +305,35 @@ void CubeModel::Render() const
 
 	// Bind our index buffer
 	m_dxdevice_context->IASetIndexBuffer(m_index_buffer, DXGI_FORMAT_R32_UINT, 0);
-	
+
 	// Bind material
 	m_dxdevice_context->PSSetConstantBuffers(1, 1, &m_local_material_buffer);
 
 	//Bind texture
 	m_dxdevice_context->PSSetShaderResources(0, 1, &material.diffuseTexture.TextureView);
 
-	
+
 
 	// Make the drawcall
 	m_dxdevice_context->DrawIndexed(m_number_of_indices, 0, 0);
 }
 
-void CubeModel::UpdateMaterial() const
+void SkyboxModel::UpdateMaterial() const
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	m_dxdevice_context->Map(m_local_material_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	MaterialBuffer* materialbuffer = (MaterialBuffer*)resource.pData;
 	//materialbuffer->ambient = material.ambient;
-	materialbuffer->ambient = { 0.0f, 0.5f, 0.0f, 0.0f };
+	materialbuffer->ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
 	materialbuffer->diffuse = { 1, 1, 1, 1 };
 	materialbuffer->specular = { 1, 1, 1, 64.0f };
+	materialbuffer->hasNormal = FALSE;
+	materialbuffer->isSkybox = TRUE;
 	//m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
 	m_dxdevice_context->Unmap(m_local_material_buffer, 0);
 }
 
-//void CubeModel::Render() const
+//void SkyboxModel::Render() const
 //{
 //	// Bind our vertex buffer
 //	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;

@@ -93,6 +93,10 @@ OBJModel::OBJModel(
 			std::cout << "\t" << material.NormalTextureFilename
 				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
+		else
+		{
+			material.hasNormal = FALSE;
+		}
 
 		// + other texture types here - see Material class
 		// ...
@@ -134,7 +138,15 @@ void OBJModel::Render() const
 
 void OBJModel::UpdateMaterial() const
 {
-
+	//D3D11_MAPPED_SUBRESOURCE resource;
+	//m_dxdevice_context->Map(m_local_material_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	//Material* materialbuffer = (Material*)resource.pData;
+	////materialbuffer->ambient = material.ambient;
+	//materialbuffer->isSkybox = skybox;
+	///*materialbuffer->diffuse = { 1, 1, 1, 1 };
+	//materialbuffer->specular = { 1, 1, 1, 64.0f };*/
+	////m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
+	//m_dxdevice_context->Unmap(m_local_material_buffer, 0);
 }
 
 OBJModel::~OBJModel()

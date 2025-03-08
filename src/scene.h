@@ -105,12 +105,16 @@ class OurTestScene : public Scene
 	Model* m_quad;
 	Model* m_sponza;
 	Model* m_cube;
+	Model* m_sphere;
+	Model* m_skybox;
 
 	Texture cube_map;
 
 	mat4f m_sponza_transform;
 	mat4f m_quad_transform;
 	mat4f m_cube_transform;
+	mat4f m_sphere_transform;
+	mat4f m_skybox_transform;
 
 	mat4f m_view_matrix;
 	mat4f m_projection_matrix;
@@ -140,7 +144,9 @@ class OurTestScene : public Scene
 
 	void UpdateCameraAndLightBuffer(vec4f camera_position, vec4f light_position);
 	
-	void UpdateMaterialBuffer(vec4f ambient_, vec4f diffuse_, vec4f specular_);
+	//void UpdateMaterialBuffer(vec4f ambient_, vec4f diffuse_, vec4f specular_);
+	
+	void UpdateMaterialBuffer(vec4f ambient_, vec4f diffuse_, vec4f specular_, bool hasNormal, bool isSkybox);
 
 
 public:

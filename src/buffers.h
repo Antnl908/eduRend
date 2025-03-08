@@ -40,5 +40,6 @@ struct MaterialBuffer
 	alignas(16) Texture diffuseTexture;
 	alignas(16) Texture normalTexture;
 	alignas(16) Texture cubeTexture;
-	alignas(16) bool hasNormal = FALSE;
+	alignas(16) bool hasNormal;
+	alignas(16) bool isSkybox;
 };

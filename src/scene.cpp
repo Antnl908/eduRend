@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "QuadModel.h"
 #include "cubemodel.h"
+#include "skyboxModel.h"
 #include "OBJModel.h"
 
 Scene::Scene(
@@ -54,19 +55,33 @@ void OurTestScene::Init()
 	// Create objects
 	m_quad = new QuadModel(m_dxdevice, m_dxdevice_context);
 	m_sponza = new OBJModel("assets/crytek-sponza/sponza.obj", m_dxdevice, m_dxdevice_context);
+	m_sphere = new OBJModel("assets/sphere/sphere.obj", m_dxdevice, m_dxdevice_context);
+	//m_skybox = new OBJModel("assets/box/flippedbox.obj", m_dxdevice, m_dxdevice_context);
+	//m_skybox->skybox = TRUE;
+	m_skybox = new SkyboxModel(m_dxdevice, m_dxdevice_context);
 	m_cube = new CubeModel(m_dxdevice, m_dxdevice_context);
+	InitSkybox();
+
+	light_y = 7;
 }
 
 void OurTestScene::InitSkybox()
 {
 	const char* cube_filenames[6] =
 	{
-	   "assets/cubemaps/Skybox/Skybox-posx.png",
+	   /*"assets/cubemaps/Skybox/Skybox-posx.png",
 	   "assets/cubemaps/Skybox/Skybox-negx.png",
 	   "assets/cubemaps/Skybox/Skybox-posy.png",
 	   "assets/cubemaps/Skybox/Skybox-negy.png",
 	   "assets/cubemaps/Skybox/Skybox-posz.png",
-	   "assets/cubemaps/Skybox/Skybox-negz.png",
+	   "assets/cubemaps/Skybox/Skybox-negz.png",*/
+	   
+	   "assets/cubemaps/cubemaps/brightday/posx.png",
+	   "assets/cubemaps/cubemaps/brightday/negx.png",
+	   "assets/cubemaps/cubemaps/brightday/posy.png",
+	   "assets/cubemaps/cubemaps/brightday/negy.png",
+	   "assets/cubemaps/cubemaps/brightday/posz.png",
+	   "assets/cubemaps/cubemaps/brightday/negz.png",
 	};
 
 	HRESULT hr = LoadCubeTextureFromFile(m_dxdevice, cube_filenames, &cube_map);
@@ -103,13 +118,13 @@ void OurTestScene::Update(
 
 	if (!back)
 	{
-		light_z += 0.5f;
-		if (light_z > 100.0f) { back = TRUE; }
+		light_z += 0.1f;
+		if (light_z > 50.0f) { back = TRUE; }
 	}
 	else
 	{
-		light_z -= 0.5f;
-		if (light_z < -100.0f) { back = FALSE; }
+		light_z -= 0.1f;
+		if (light_z < -50.0f) { back = FALSE; }
 	}
 	/*yaw += mousedx * sense;
 	pitch += mousedy * sense;*/
@@ -133,6 +148,20 @@ void OurTestScene::Update(
 	m_cube_transform = mat4f::translation(0, -1.5, 1) *			// No translation
 		mat4f::rotation(0.0f, 0.0f, 0.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(1.0, 1.0, 1.0);				// Scale uniformly to 150%
+
+	m_sphere_transform = mat4f::translation(0, 2, 0) *		 // Move down 5 units
+		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
+		mat4f::scaling(1.0f);
+	
+	//m_skybox_transform = mat4f::translation(0, 5, 0) *		 // Move down 5 units
+	//	mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
+	//	mat4f::scaling(10.0f);
+
+	linalg::vec4f temp = m_camera->Pos();
+	m_skybox_transform = mat4f::translation(temp.x, temp.y, temp.z) *		 // Move down 5 units
+	//m_skybox_transform = mat4f::translation(0.0f, 5.0f, 0.0f) *		 // Move down 5 units
+		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
+		mat4f::scaling(500.0f); //Sätt skalan  något större för att kameran ska kunna se den
 
 	// Increment the rotation angle.
 	m_angle += m_angular_velocity * dt;
@@ -172,7 +201,8 @@ void OurTestScene::Render()
 	UpdateCameraAndLightBuffer(campos, lightpos);
 	//UpdateCameraAndLightBuffer(campos, campos);
 	//UpdateMaterialBuffer(vecallone, vecallone, vecallone);
-	UpdateMaterialBuffer(vecalzero, vecallone, vectestspec);
+	//UpdateMaterialBuffer(vecallone, vecallone, vectestspec);
+	UpdateMaterialBuffer(vecalzero, vecallone, vectestspec, FALSE, FALSE);
 	//UpdateMaterialBuffer(alphaone, vecallone, vectestspec);
 
 	// Load matrices + the Quad's transformation to the device and render it
@@ -182,6 +212,13 @@ void OurTestScene::Render()
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(m_sponza_transform, m_view_matrix, m_projection_matrix);
 	m_sponza->Render();
+	
+	UpdateTransformationBuffer(m_sphere_transform, m_view_matrix, m_projection_matrix);
+	m_sphere->Render();
+	
+	m_skybox->UpdateMaterial();
+	UpdateTransformationBuffer(m_skybox_transform, m_view_matrix, m_projection_matrix);
+	m_skybox->Render();
 
 	//UpdateMaterialBuffer(vectest2, vecallone, vecallone);
 	m_cube->UpdateMaterial();
@@ -306,10 +343,28 @@ void OurTestScene::UpdateCameraAndLightBuffer(
 	m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
 }
 
+//void OurTestScene::UpdateMaterialBuffer(
+//	vec4f ambient_, 
+//	vec4f diffuse_, 
+//	vec4f specular_)
+//{
+//	// Map the resource buffer, obtain a pointer and then write our matrices to it
+//	D3D11_MAPPED_SUBRESOURCE resource;
+//	m_dxdevice_context->Map(m_material_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+//	MaterialBuffer* materialbuffer = (MaterialBuffer*)resource.pData;
+//	materialbuffer->ambient = ambient_;
+//	materialbuffer->diffuse = diffuse_;
+//	materialbuffer->specular = specular_;
+//	//m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
+//	m_dxdevice_context->Unmap(m_material_buffer, 0);
+//}
+
 void OurTestScene::UpdateMaterialBuffer(
 	vec4f ambient_, 
 	vec4f diffuse_, 
-	vec4f specular_)
+	vec4f specular_,
+	bool hasNormal_,
+	bool isSkybox_)
 {
 	// Map the resource buffer, obtain a pointer and then write our matrices to it
 	D3D11_MAPPED_SUBRESOURCE resource;
@@ -318,6 +373,8 @@ void OurTestScene::UpdateMaterialBuffer(
 	materialbuffer->ambient = ambient_;
 	materialbuffer->diffuse = diffuse_;
 	materialbuffer->specular = specular_;
+	materialbuffer->hasNormal = hasNormal_;
+	materialbuffer->isSkybox = isSkybox_;
 	//m_dxdevice_context->Unmap(m_cameraandlight_buffer, 0);
 	m_dxdevice_context->Unmap(m_material_buffer, 0);
 }

@@ -13,6 +13,7 @@
 */
 class OBJModel : public Model
 {
+
 	// index ranges, representing Drawcalls, within an index array
 	struct IndexRange
 	{
@@ -44,6 +45,7 @@ public:
 	/**
 	 * @brief Renders the model.
 	*/
+
 	virtual void Render() const;
 	virtual void UpdateMaterial() const;
 

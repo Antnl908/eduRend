@@ -76,7 +76,9 @@ public:
 	/*{
 		m_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
 	};*/
-	
+
+	bool skybox;
+
 	virtual void UpdateMaterial() const = 0;
 
 	virtual void ComputeTB(Vertex& v0, Vertex& v1, Vertex& v2) const;
